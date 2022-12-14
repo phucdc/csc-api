@@ -1,9 +1,16 @@
 - Clone this repo and `cd` to it
 
-- Set environemt variable `SONAR_TOKEN` to your token
+- Set environemt variable `SC_TOKEN` to your token
 
 ```console
-$ export SONAR_TOKEN=<your_token>
+$ export SC_TOKEN=<your_token>
+```
+
+
+- Set environemt variable `SC_ORGANIZATION` to your token
+
+```console
+$ export SC_ORGANIZATION=<your_organization_name>
 ```
 
 - Install required packages (make sure `python3` and `python3-pip` installed):
@@ -12,14 +19,14 @@ $ export SONAR_TOKEN=<your_token>
 $ pip3 install -r requirements.txt
 ```
 
-- Uhmm... create folder named `sonar` to save data:
+- Uhmm... create folder named `data` to save data:
 
 ```console
-$ mkdir sonar
+$ mkdir data
 ```
 
 - Serve APIs with `gunicorn`(not available for Windows yet) in background:
 
 ```console
-$ gunicorn -b 0.0.0.0:9000 app:app &
+$ uvicorn app:app --host 0.0.0.0 --port 9000 &
 ```

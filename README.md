@@ -25,7 +25,7 @@ $ pip3 install -r requirements.txt
 $ mkdir data
 ```
 
-- Serve APIs with `gunicorn`(not available for Windows yet) in background:
+- Serve APIs with `uvicorn` in background:
 
 ```console
 $ uvicorn app:app --host 0.0.0.0 --port 9000 &

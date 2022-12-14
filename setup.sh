@@ -12,6 +12,7 @@ export SC_TOKEN=${sc_token}
 env | grep SC_
 
 echo "Installing requirements"
+mkdir data
 pip3 install -r requirements.txt &>>install.log
 
 echo "Starting API at port 9000"

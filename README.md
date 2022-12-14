@@ -19,10 +19,11 @@ $ export SC_ORGANIZATION=<your_organization_name>
 $ pip3 install -r requirements.txt
 ```
 
-- Uhmm... create folder named `data` to save data:
+- Uhmm... create folder named `data` and `log`:
 
 ```console
-$ mkdir data
+$ [ ! -d "data" ] && mkdir data
+$ [ ! -d "logs" ] && mkdir logs
 ```
 
 - Serve APIs with `uvicorn` in background:

@@ -11,15 +11,18 @@ export SC_ORGANIZATION=${sc_organization}
 export SC_TOKEN=${sc_token}
 env | grep SC_
 
+echo "Create neccessary dirs"
+[ ! -d "data" ] && mkdir data
+[ ! -d "logs" ] && mkdir logs
+
 echo "Installing requirements"
-mkdir data
-pip3 install -r requirements.txt &>>install.log
+pip3 install -r requirements.txt &>>logs/install.log
 
 echo "Starting API at port 9000"
-uvicorn app:app --host 0.0.0.0 --port 9000 --reload &>> api_log.log &
+uvicorn app:app --host 0.0.0.0 --port 9000 --reload &>> logs/api_log.log &
 
 if [[ $? -ne 0 ]]; then
-	echo "Failed, check the log file: $(pwd)/install.log & $(pwd)/api.log"
+	echo -e "Failed, check the log file: \n- logs/install.log\n- logs/api.log"
 else
 	echo "Serving process started successfully"
 fi

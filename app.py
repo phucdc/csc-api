@@ -7,7 +7,7 @@ for module in ['os', 'json', 'time', 'datetime', 'requests', 'pytz']:
 class SubmitForm(BaseModel):
     projectKey: str
     scanTime: str
-    # secretKey: str = ''
+    scanType: str
 
 # app init
 app = FastAPI(
@@ -42,7 +42,7 @@ def to_seconds(scanTime: str):
     else:
         return float(_time[0]) * 3600 + float(_time[1]) * 60 + float(_time[2])
 
-def getmeasures(projectKey: str):
+def getmeasures(projectKey: str, scanType: str):
     url = f'https://sonarcloud.io/api/measures/component?metricKeys=ncloc,vulnerabilities,bugs&componentKey={projectKey}'
     headers = {
         'Authorization': f'Bearer {SC_TOKEN}'
@@ -57,6 +57,8 @@ def getmeasures(projectKey: str):
     }
     for measure in r.json()['component']['measures']:
         result[measure['metric']] = int(measure['value']) 
+    if scanType == 'full':
+        result['ncloc'] = 0
     return result
 
 def save_data(data: dict):
@@ -71,7 +73,7 @@ def save_data(data: dict):
 @api.post('/submit')
 async def submit(req: SubmitForm):
     time.sleep(60)
-    measures = getmeasures(req.projectKey)
+    measures = getmeasures(req.projectKey, req.scanType)
     if not measures:
         return {'status': 'error', 'message': 'There was an error, pls check your $SC_TOKEN or projectKey'}
     d = datetime.datetime.now(pytz.timezone('Asia/Ho_Chi_Minh'))

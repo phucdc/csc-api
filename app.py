@@ -70,6 +70,7 @@ def save_data(data: dict):
 
 @api.post('/submit')
 async def submit(req: SubmitForm):
+    time.sleep(60)
     measures = getmeasures(req.projectKey)
     if not measures:
         return {'status': 'error', 'message': 'There was an error, pls check your $SC_TOKEN or projectKey'}

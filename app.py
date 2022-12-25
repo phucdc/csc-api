@@ -21,14 +21,14 @@ SC_ORG = os.getenv('SC_ORGANIZATION')
 
 # root page
 @app.get('/')
-async def root():
+def root():
     return {'detail': 'Nothing Here'}
 
 # define api root
 api = APIRouter(prefix='/api/v1/sonarcloud')
 
 @api.get('/')
-async def root_api():
+def root_api():
     return {'detail': 'API for create storing and gathering data for Sonarcloud', 'author': 'phucdc'}
 
 def to_seconds(scanTime: str):
@@ -71,7 +71,7 @@ def save_data(data: dict):
         f.write(json.dumps(data, indent=4))
 
 @api.post('/submit')
-async def submit(req: SubmitForm):
+def submit(req: SubmitForm):
     time.sleep(60)
     measures = getmeasures(req.projectKey, req.scanType)
     if not measures:
@@ -82,7 +82,7 @@ async def submit(req: SubmitForm):
     return {'status': 'success', 'data': data}
 
 @api.get('/get-data')
-async def get_data(projectKey: str):
+def get_data(projectKey: str):
     spath = f"data/{projectKey}"
     if not os.path.exists(spath):
         return {'status': 'error', 'message': f'No data for {projectKey}'}

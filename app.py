@@ -71,7 +71,7 @@ def get_full_info(projectKey: str, scanDate: str, curtime: str):
         return
     r_dict = r.json()
     r_dict['scanDate'] = scanDate
-    r_dict['url'] = f'{curtime}.json'
+    r_dict['url'] = f'http://54.199.43.255/api/getSastScan.php?projectKey={projectKey}&filename={curtime}.json'
     save_data(r_dict, f"data/{projectKey}/vulnerabilities", curtime)
     
 def save_data(data: dict, spath: str, curtime: str):

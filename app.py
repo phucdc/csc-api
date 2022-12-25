@@ -69,14 +69,11 @@ def get_full_info(projectKey: str):
     r = requests.get(url=url, headers=headers)
     if r.status_code != 200:
         return
-    save_data(dict(r.json()), f'data/{projectKey}/vulnerabilities')
+    save_data(r.json, f"data/{projectKey}/vulnerabilities")
     
-def save_data(data: dict, spath: str = ''):
-    if not spath:
-        spath = f"data/{data['projectKey']}"
+def save_data(data: dict, spath: str):
     if not os.path.exists(spath):
         os.mkdir(spath)
-        os.mkdir(f'{spath}/vulnerabilities')
     curtime = time.strftime("%Y%m%d-%H%M%S")
     fpath = f"{spath}/{curtime}.json"
     with open(fpath, 'w') as f:
@@ -90,16 +87,20 @@ def submit(req: SubmitForm):
         return {'status': 'error', 'message': 'There was an error, pls check your $SC_TOKEN or projectKey'}
     d = datetime.datetime.now(pytz.timezone('Asia/Ho_Chi_Minh'))
     data = {'projectKey': req.projectKey, 'scanDate': d.isoformat('T'), 'scanTime': to_seconds(req.scanTime), **measures}
-    save_data(data)
+    save_data(data, f"data/{data['projectKey']}")
     get_full_info(req.projectKey)
     return {'status': 'success', 'data': data}
 
 @api.get('/get-data')
-def get_data(projectKey: str, dtype: str = 'measures'): # measures or full?
-    if not dtype:
-        spath = f"data/{projectKey}"
-    else:
-        spath = f"data/{projectKey}/vulnerability"
+def get_data(projectKey: str, dtype = 'measures'):
+    paths = {
+        'measures': f'data/{projectKey}/',
+        'full': f'data/{projectKey}/vulnerabilities'
+    }
+    try:
+        spath = paths[dtype]
+    except:
+        return {'status': 'error', 'message': "'dtype' have only 'measures', 'full'"}
     if not os.path.exists(spath):
         return {'status': 'error', 'message': f'No data for {projectKey}'}
     alldata = []

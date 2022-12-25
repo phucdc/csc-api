@@ -61,10 +61,22 @@ def getmeasures(projectKey: str, scanType: str):
         result['ncloc'] = 0
     return result
 
-def save_data(data: dict):
-    spath = f"data/{data['projectKey']}"
+def get_full_info(projectKey: str):
+    url = f'https://sonarcloud.io/api/issues/search?s=FILE_LINE&resolved=false&types=VULNERABILITY&ps=100&facets=severities%2CsonarsourceSecurity%2Ctypes&componentKeys={projectKey}&organization={SC_ORG}&additionalFields=_all'
+    headers = {
+        'Authorization': f'Bearer {SC_TOKEN}'
+    }
+    r = requests.get(url=url, headers=headers)
+    if r.status_code != 200:
+        return
+    save_data(dict(r.json()), f'data/{projectKey}/vulnerabilities')
+    
+def save_data(data: dict, spath: str = ''):
+    if not spath:
+        spath = f"data/{data['projectKey']}"
     if not os.path.exists(spath):
         os.mkdir(spath)
+        os.mkdir(f'{spath}/vulnerabilities')
     curtime = time.strftime("%Y%m%d-%H%M%S")
     fpath = f"{spath}/{curtime}.json"
     with open(fpath, 'w') as f:
@@ -79,11 +91,15 @@ def submit(req: SubmitForm):
     d = datetime.datetime.now(pytz.timezone('Asia/Ho_Chi_Minh'))
     data = {'projectKey': req.projectKey, 'scanDate': d.isoformat('T'), 'scanTime': to_seconds(req.scanTime), **measures}
     save_data(data)
+    get_full_info(req.projectKey)
     return {'status': 'success', 'data': data}
 
 @api.get('/get-data')
-def get_data(projectKey: str):
-    spath = f"data/{projectKey}"
+def get_data(projectKey: str, dtype: str = 'measures'): # measures or full?
+    if not dtype:
+        spath = f"data/{projectKey}"
+    else:
+        spath = f"data/{projectKey}/vulnerability"
     if not os.path.exists(spath):
         return {'status': 'error', 'message': f'No data for {projectKey}'}
     alldata = []

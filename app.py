@@ -69,7 +69,7 @@ def get_full_info(projectKey: str):
     r = requests.get(url=url, headers=headers)
     if r.status_code != 200:
         return
-    save_data(r.json, f"data/{projectKey}/vulnerabilities")
+    save_data(r.json(), f"data/{projectKey}/vulnerabilities")
     
 def save_data(data: dict, spath: str):
     if not os.path.exists(spath):

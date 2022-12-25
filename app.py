@@ -105,8 +105,11 @@ def get_data(projectKey: str, dtype = 'measures'):
         return {'status': 'error', 'message': f'No data for {projectKey}'}
     alldata = []
     for file in os.listdir(spath):
-        data = json.load(open(f'{spath}/{file}'))
-        alldata.append(data)
+        try:
+            data = json.load(open(f'{spath}/{file}'))
+            alldata.append(data)
+        except Exception as e:
+            print(e)
     return alldata
 
 app.include_router(api)
